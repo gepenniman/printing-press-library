@@ -998,6 +998,58 @@
       }
     },
     {
+      "name": "amplitude",
+      "category": "marketing",
+      "api": "Amplitude Read",
+      "description": "Read-first Amplitude Analytics API surface for exports, cohorts, events, users, and chart-style analytics queries.",
+      "search_terms": [
+        "amplitude",
+        "Amplitude Read",
+        "amplitude-pp-cli",
+        "Read-first Amplitude Analytics API surface for exports, cohorts, events, users, and chart-style analytics queries.",
+        "Agent command discovery",
+        "which",
+        "Map a natural-language capability request to the exact generated CLI command before executing it.",
+        "Structured agent context",
+        "agent-context",
+        "Emit machine-readable command, auth, and profile metadata so agents can plan calls without scraping help text.",
+        "Local SQLite sync framework",
+        "sync",
+        "Sync selected API resources into a local SQLite store for repeatable offline inspection and analysis.",
+        "SQL analytics on synced records",
+        "analytics",
+        "Run read-only SQL against synced API records for compound questions the upstream API does not expose directly."
+      ],
+      "path": "library/marketing/amplitude",
+      "release": {
+        "cli_name": "amplitude-pp-cli",
+        "version": "",
+        "released_at": "",
+        "source_commit": ""
+      },
+      "printer": "debgotwired",
+      "printer_name": "Deb Mukherjee",
+      "creator": {
+        "handle": "debgotwired",
+        "name": "Deb Mukherjee"
+      },
+      "mcp": {
+        "binary": "amplitude-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "AMPLITUDE_USERNAME",
+          "AMPLITUDE_PASSWORD"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "ankiweb",
       "category": "education",
       "api": "Ankiweb",
@@ -4905,9 +4957,9 @@
       "path": "library/productivity/expensify",
       "release": {
         "cli_name": "expensify-pp-cli",
-        "version": "",
-        "released_at": "",
-        "source_commit": ""
+        "version": "2026.6.1",
+        "released_at": "2026-06-23T17:13:17Z",
+        "source_commit": "0eaf1b5c048ca0a82ee9fbc4638c20d411b5747d"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
