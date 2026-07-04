@@ -59,8 +59,9 @@ func newNovelCancelCmd(flags *rootFlags) *cobra.Command {
 			}
 
 			// Look up the booking to get its rabbitId (taskers[0].id), which
-			// cancelTask requires alongside jobId.
-			active, err := tr.ListTasks(ctx, 1, 50, map[string]any{"status": "active"}, "en-US")
+			// cancelTask requires alongside jobId. Page through active bookings so
+			// a booking past the first page is still found.
+			active, err := listAllActiveBookings(ctx, tr)
 			if err != nil {
 				return classifyAPIError(fmt.Errorf("cancel: look up booking %d: %w", jobID, err), flags)
 			}
@@ -77,19 +78,19 @@ func newNovelCancelCmd(flags *rootFlags) *cobra.Command {
 				return classifyAPIError(fmt.Errorf("cancel: no active booking with id %d (run `tasks list` to see current bookings)", jobID), flags)
 			}
 
+			// A missing CSRF token guarantees a 403 on the mutation, so fail fast
+			// with the root cause rather than surfacing it as a downstream API error.
 			token, tokenErr := csrfToken(ctx, flags)
-			tokenNote := ""
 			if tokenErr != nil {
-				tokenNote = "could not obtain CSRF token"
-				fmt.Fprintf(cmd.ErrOrStderr(), "%s: %v\n", tokenNote, tokenErr)
+				return classifyAPIError(fmt.Errorf("cancel TaskRabbit booking %d: obtain CSRF token: %w", jobID, tokenErr), flags)
 			}
 
 			if _, err := tr.CancelTask(ctx, jobID, rabbitID, "Plans changed, no longer need the help", token); err != nil {
 				return classifyAPIError(fmt.Errorf("cancel TaskRabbit booking %d: %w", jobID, err), flags)
 			}
 
-			// Verify: re-read active bookings; the cancelled booking must be gone.
-			after, err := tr.ListTasks(ctx, 1, 50, map[string]any{"status": "active"}, "en-US")
+			// Verify: re-read active bookings (all pages); the cancelled booking must be gone.
+			after, err := listAllActiveBookings(ctx, tr)
 			if err != nil {
 				return classifyAPIError(fmt.Errorf("cancel TaskRabbit booking %d succeeded, but verify re-read failed: %w", jobID, err), flags)
 			}
@@ -103,7 +104,6 @@ func newNovelCancelCmd(flags *rootFlags) *cobra.Command {
 			result := cancelResult{
 				BookingID:        id,
 				CancelResponseOK: true,
-				Note:             tokenNote,
 			}
 			if stillActive {
 				result.VerifiedStatus = "still-active"
@@ -123,6 +123,25 @@ type cancelResult struct {
 	CancelResponseOK bool   `json:"cancel_response_ok"`
 	VerifiedStatus   string `json:"verified_status"`
 	Note             string `json:"note,omitempty"`
+}
+
+// listAllActiveBookings pages through active TaskRabbit bookings so a booking
+// past the first page is still found. Capped so a paging bug can't loop forever.
+func listAllActiveBookings(ctx context.Context, tr *taskrabbit.Client) ([]taskrabbit.Booking, error) {
+	const perPage = 50
+	const maxPages = 40 // 2000 active bookings is far beyond any real account
+	var all []taskrabbit.Booking
+	for page := 1; page <= maxPages; page++ {
+		batch, err := tr.ListTasks(ctx, page, perPage, map[string]any{"status": "active"}, "en-US")
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, batch...)
+		if len(batch) < perPage {
+			break
+		}
+	}
+	return all, nil
 }
 
 func csrfToken(ctx context.Context, flags *rootFlags) (string, error) {

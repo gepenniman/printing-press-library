@@ -132,7 +132,17 @@ func newNovelHireCmd(flags *rootFlags) *cobra.Command {
 			}
 
 			allInHourly := pricing.AllIn(best.PosterHourlyRateCents, flagState).AllInCents
-			totalCents := allInHourly * 2
+			// Estimate the booking total from the actual slot duration rather than a
+			// flat 2-hour guess, so the spend cap does not reject in-budget bookings.
+			// Floor at 1 hour, and honor the Tasker's 2-hour minimum when it applies.
+			estHours := durationSeconds / 3600
+			if estHours < 1 {
+				estHours = 1
+			}
+			if taskerRequiresTwoHourMinimum(best) && estHours < 2 {
+				estHours = 2
+			}
+			totalCents := allInHourly * estHours
 			withinCap := maxTotal == 0 || float64(totalCents)/100.0 <= maxTotal
 			if maxTotal > 0 && !withinCap {
 				fmt.Fprintf(cmd.ErrOrStderr(), "refusing: all-in total %s exceeds cap %s\n", pricing.FormatCents(totalCents), formatDollarCap(maxTotal))
@@ -348,6 +358,24 @@ func taskerInviteeID(id string) (int, []string) {
 		return parsed, make([]string, 0)
 	}
 	return 0, []string{fmt.Sprintf("tasker id %q has no numeric invitee id; using invitee_id=0", clean)}
+}
+
+// taskerRequiresTwoHourMinimum reports whether the recommendation's
+// two_hour_minimum_required_display field indicates a 2-hour booking minimum.
+func taskerRequiresTwoHourMinimum(t taskrabbit.Tasker) bool {
+	switch v := t.TwoHourMinimum.(type) {
+	case bool:
+		return v
+	case string:
+		s := strings.TrimSpace(strings.ToLower(v))
+		return s != "" && s != "false" && s != "0" && s != "no"
+	case float64:
+		return v != 0
+	case map[string]any:
+		return len(v) > 0
+	default:
+		return false
+	}
 }
 
 func firstTaskRabbitSlot(availableDates []taskrabbit.AvailableDate, requestedDate string) (string, string, int, int, string) {

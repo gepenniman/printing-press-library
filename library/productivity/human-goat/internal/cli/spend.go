@@ -17,6 +17,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mvanhorn/printing-press-library/library/productivity/human-goat/internal/pricing"
 	"github.com/mvanhorn/printing-press-library/library/productivity/human-goat/internal/store"
 )
 
@@ -139,7 +140,7 @@ func aggregateSpendRows(rows []spendResourceRow, by string) []spendOutputRow {
 		}
 		agg := aggregates[group]
 		agg.count++
-		if cents, ok := findSpendAmountCents(decoded); ok {
+		if cents, ok := spendAmountCentsForRow(row, decoded); ok {
 			agg.totalCents += cents
 		}
 		aggregates[group] = agg
@@ -243,6 +244,44 @@ func spendStringValue(value any) string {
 	default:
 		return ""
 	}
+}
+
+// spendAmountCentsForRow resolves the spend amount for a row, applying the
+// TaskRabbit all-in fee transform (service + trust-and-support fees) to the
+// stored base hourly rate so TaskRabbit rows report the effective all-in figure
+// the command advertises, rather than the pre-fee base or zero.
+func spendAmountCentsForRow(row spendResourceRow, decoded any) (int, bool) {
+	if row.ResourceType != "magic" {
+		if base, ok := findPosterHourlyRateCents(decoded); ok {
+			return pricing.AllIn(base, "").AllInCents, true
+		}
+	}
+	return findSpendAmountCents(decoded)
+}
+
+// findPosterHourlyRateCents extracts a TaskRabbit poster_hourly_rate_cents value
+// (the pre-fee base rate) from a decoded row, recursing into nested objects.
+func findPosterHourlyRateCents(value any) (int, bool) {
+	switch v := value.(type) {
+	case map[string]any:
+		if item, ok := v["poster_hourly_rate_cents"]; ok {
+			if cents, ok := spendCentsValue("poster_hourly_rate_cents", item); ok {
+				return cents, true
+			}
+		}
+		for _, item := range v {
+			if cents, ok := findPosterHourlyRateCents(item); ok {
+				return cents, true
+			}
+		}
+	case []any:
+		for _, item := range v {
+			if cents, ok := findPosterHourlyRateCents(item); ok {
+				return cents, true
+			}
+		}
+	}
+	return 0, false
 }
 
 func findSpendAmountCents(value any) (int, bool) {
