@@ -19095,9 +19095,9 @@
       "path": "library/health/peloton",
       "release": {
         "cli_name": "peloton-pp-cli",
-        "version": "2026.9.12",
-        "released_at": "2026-09-20T09:23:54Z",
-        "source_commit": "4dc07dda8d4c69f190438d6815e0f462707320d6"
+        "version": "2026.9.13",
+        "released_at": "2026-09-21T09:15:51Z",
+        "source_commit": "e28eb82f1700b4d5f20418abe4f9ff18b760d7bb"
       },
       "printer": "itsmefelix-",
       "printer_name": "Felix Banuchi",
