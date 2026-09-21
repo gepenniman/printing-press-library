@@ -11275,9 +11275,9 @@
       "path": "library/productivity/granola",
       "release": {
         "cli_name": "granola-pp-cli",
-        "version": "2026.9.2",
-        "released_at": "2026-09-20T23:35:04Z",
-        "source_commit": "423894166e122aaecc24e438afdda57d79dc86af"
+        "version": "2026.9.3",
+        "released_at": "2026-09-21T00:23:16Z",
+        "source_commit": "7f8548e7329a9a1732fcd075b64e5e0d1d14c799"
       },
       "printer": "dstevens",
       "printer_name": "Damien Stevens",
@@ -13949,6 +13949,12 @@
         "handle": "vieGPT",
         "name": "Max Michel"
       },
+      "contributors": [
+        {
+          "handle": "meoyawn",
+          "name": "Adel Nizamutdinov"
+        }
+      ],
       "mcp": {
         "binary": "keyword-planner-pp-mcp",
         "transports": [
@@ -13962,7 +13968,6 @@
           "GOOGLE_ADS_CLIENT_ID",
           "GOOGLE_ADS_CLIENT_SECRET",
           "GOOGLE_ADS_REFRESH_TOKEN",
-          "GOOGLE_ADS_DEVELOPER_TOKEN",
           "GOOGLE_ADS_CUSTOMER_ID",
           "GOOGLE_ADS_LOGIN_CUSTOMER_ID"
         ],
@@ -16478,6 +16483,67 @@
         ],
         "tool_count": 2,
         "public_tool_count": 2,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
+      "name": "nepra",
+      "category": "other",
+      "api": "NEPRA",
+      "description": "Pakistan's electricity regulator publishes the country's only plant-level power data as Excel-exported HTML that reads as empty and PDFs nobody extracts — this turns it into a queryable panel and names every gap.",
+      "search_terms": [
+        "nepra",
+        "nepra-pp-cli",
+        "Pakistan's electricity regulator publishes the country's only plant-level power data as Excel-exported HTML that reads as empty and PDFs nobody extracts — this turns it into a queryable panel and names every gap.",
+        "Plant-month generation extract",
+        "gen",
+        "Pull every power plant's monthly generation and utilisation for a fiscal year as rows you can pipe, with unreported months kept distinct from real zeros.",
+        "Operator and ticker fleet panel",
+        "fleet",
+        "Follow one plant or a listed operator's whole fleet across the fiscal years the crosswalk has observed, through renames and re-sorted row numbers.",
+        "Conflict and break ledger",
+        "conflicts",
+        "List every place NEPRA's own published figures disagree — two sources on one key, an unexplained step inside a single series, or a row that fails its own arithmetic — showing both values and both citations without picking a winner.",
+        "DISCO reliability panel",
+        "disco",
+        "Per-distribution-company transmission losses, recovery, interruption frequency and duration against the regulator's own targets, across report years.",
+        "Regulatory determination feed",
+        "events",
+        "A dated feed of tariff determinations and orders by company, distribution company or docket, with the verbatim document link.",
+        "Generation licence register",
+        "licence",
+        "The licence register with gross capacity, plant type, fuel and the modification trail, searchable by name or fuel.",
+        "Fetch and staleness gate",
+        "verify",
+        "Assert every published NEPRA surface against status, byte floor, content checksum, in-document year token and the frozen column fingerprint, exiting non-zero when stale or drifted.",
+        "Capacity by status and system",
+        "capacity",
+        "Installed and dependable capacity broken out by plant status and system, so each headline megawatt figure is labelled and derivable.",
+        "Fuel cost adjustment series",
+        "fca",
+        "The monthly requested-versus-allowed fuel cost adjustment series with cumulative disallowance, bounded to the window the source actually covers.",
+        "Source catalogue and enumerator diff",
+        "sources",
+        "Catalogue every reachable published document with size, coverage window, text-layer flag and reachability state, and diff it against the shipped manifest."
+      ],
+      "path": "library/other/nepra",
+      "printer": "qazmataz",
+      "printer_name": "qazmataz",
+      "creator": {
+        "handle": "qazmataz",
+        "name": "qazmataz"
+      },
+      "mcp": {
+        "binary": "nepra-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 11,
         "auth_type": "none",
         "env_vars": [],
         "mcp_ready": "full",
