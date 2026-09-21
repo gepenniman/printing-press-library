@@ -2,6 +2,10 @@
 
 This file is maintained by printing-press-library release automation. Do not hand-edit release sections in normal PRs.
 
+## 2026.9.13 - 2026-09-21
+
+- fix(peloton): fall back to bootstrap on dead refresh_token, stop masking 4xx/5xx (#2031).
+
 ## 2026.9.12 - 2026-09-20
 
 - fix(peloton): reject resuming a paginated cursor at a different limit (#2030).
