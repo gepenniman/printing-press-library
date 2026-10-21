@@ -3,7 +3,7 @@ module github.com/mvanhorn/printing-press-library/library/developer-tools/airfra
 go 1.26.5
 
 require (
-	github.com/klauspost/compress v1.18.6
+	github.com/klauspost/compress v1.18.7
 	github.com/mark3labs/mcp-go v0.53.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
